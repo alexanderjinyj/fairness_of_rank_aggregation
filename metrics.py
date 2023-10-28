@@ -4,12 +4,11 @@ import pandas as pd
 
 def pairwise_statistical_parity(ranking_1, ranking_2):
     """
-    compute the pairwise_statistical_parity for ranking.
-    compute the pairwise_statistical_parity for ranking.
-    :parameter ranking_1 is A numpy 2d_array of ranking over the value1 first column is the id of the candidates 2nd is the
-    ranking value of the candidates.
-    :parameter ranking_2 is A numpy 2d_array of ranking over the value1 first column is the id of
-    the candidates 2nd is the ranking value of the candidates.
+    compute the pairwise_statistical_parity for ranking. compute the pairwise_statistical_parity for ranking.
+    parameter ranking_1 is A numpy 2d_array of ranking over the value1 first column is the id of the candidates 2nd
+    is the ranking value of the candidates.
+    parameter ranking_2 is A numpy 2d_array of ranking over the value1 first column is
+    the id of the candidates 2nd is the ranking value of the candidates.
     
     """
     # return the parity value
@@ -30,7 +29,7 @@ def pairwise_statistical_parity(ranking_1, ranking_2):
 def top_k_parity(groups, k):
     """
         computer whether the ranking with mutually exclusive groups satisfies top-k parity.
-        groups are the array of  group,
+        groups are the arrays of  group,
         the group in the groups is a 2d array first column is the id of the candidates and
         2nd is the ranking value of the candidates.
         k is the top k.
@@ -44,7 +43,7 @@ def top_k_parity(groups, k):
     # size of the groups
     # counter the ith group in the iteration
     # group_counter=0
-    # a array, element is number of candidate(rank smaller than k) in one group
+    # an array, element is number of candidate(rank smaller than k) in one group
     cand_counters = []
     # counter the sum of candidate
     sum_candidates = 0
@@ -71,7 +70,7 @@ def top_k_parity(groups, k):
     for i in range(0, groups.shape[0]):
         # compute the ratio of the number of candidate in this group and the sum of the candidate
         proportion = num_candidates[i] / sum_candidates
-        # if number of candidate is not equal to the round of the (proportion* k),then its not satisfied
+        # if number of candidate is not equal to the round of the (proportion* k),then it's not satisfied
         if cand_counters[i] != round(proportion * k):
             satisfied = False
             break
@@ -84,8 +83,8 @@ def rank_equality_error(rank_1, rank_2, group_1, group_2):
     favoring in 2 ranks. This means one has lower rank value than other in one rank but inverted in another rank
     param rank_1 is a 2d array with candidate and rank
     param rank_2 is a 2d array with candidate and rank
-    param group_1 is a array with candidates
-    param group_2 is a array with candidates
+    param group_1 is an array with candidates
+    param group_2 is an array with candidates
 
     """
     # count_pairs is-the number of pairs has different favoring
@@ -113,7 +112,7 @@ def attribute_rank_parity(rank, attributes, k_attribute):
     """
     calculate arp value for the protected attribute p in rank 
     param rank is a 2d array with candidate and attribute value and rank value
-    param attributes is array with candidate and protected attributes
+    param attributes is a 2d numpy array with candidate and attributes values of the candidates
     param k_attribute is the kth attribute k
     """
     # get the all kth attributes value  +1 because attributes[0] is candidates
@@ -150,48 +149,67 @@ def attribute_rank_parity(rank, attributes, k_attribute):
 
 def favored_pair_representation(rank, attributes, attributes_values):
     """
-    calculate fps score param rank is a 2d array with candidate and attribute value and rank value param attributes
-    is array with candidate and protected attributes param attributes_values is the array with values of attributes
-    for interested attribute and the uninterested attribute's value is nan
+    calculate fps score
+    param rank is a 2d array with candidate and attribute value and rank value .
+    param attributes is a 2d numpy array with candidate and attributes values of the candidates
+    param attributes_values is an array of values of attributes. the interested attributes have value and
+    the uninterested attribute's value is nan.
     """
-
+    # groups is an array of 2 arrays, first  array is an array of wanted candidates,
+    # second is the array of other candidates.
+    groups = group_by(attributes, attributes_values)
     # group of candidates whose attributes values are  equal to attributes_values
-    protected_group = []
+    wanted_group = groups[0]
+    # group of candidates whose attributes values are not equal to attributes_values
+    other_group = groups[1]
+
+    # number of pair in mixed pairs equals to (number of candidate in wanted_group*number of candidate in
+    # other_group)
+    mixed_pairs = len(wanted_group) * len(other_group)
+    # number of count pairs
+    count_pairs = 0
+    # compute the number of count pair
+    for wanted_candidate in wanted_group:
+        for other_candidate in other_group:
+            rank_of_wanted = rank[np.argwhere(rank[:, 0] == wanted_candidate), 1]
+            rank_of_other = rank[np.argwhere(rank[:, 0] == other_candidate), 1]
+            if rank_of_wanted < rank_of_other:
+                count_pairs += 1
+    # fpr score is the result
+    fpr = count_pairs / mixed_pairs
+    return fpr
+
+
+def group_by(attributes, attributes_values):
+    """
+    select the candidates, whose attributes values are equal to attributes_values,then group them into wanted_group,
+    group other candidate into other_group.
+    param attributes is a 2d numpy array with candidate and attributes values of the candidates
+    param attributes_values is an array of values of attributes. the interested attributes have value and
+    the uninterested attribute's value is nan.
+    """
+    # group of candidates whose attributes values are  equal to attributes_values
+    wanted_group = []
     # group of candidates whose attributes values are not equal to attributes_values
     other_group = []
     # divide candidates into 2 groups
     for attribute in attributes:
         # qualified_candidate check whether the candidates' attributes values are  equal to attributes_values
-        qualified_candidate = True
+        selected_candidate = True
         # check whether the candidates' attributes values are  equal to attributes_values
         for value in range(len(attributes_values)):
-            # if the value of one attribute in attributes_values is nan dont check it
-            # if its not nan check the value
+            # if the value of one attribute in attributes_values is nan don't check it
+            # if it is not nan check the value
             if ~pd.isnull(attributes_values[value]):
                 # check value if is not equal qualified_candidate become False and end loop.because attribute is
                 # tuple of (candidates and attributes value) and attributes_values is the tuple of attributes values
                 # of index of  attribute should +1
                 if attribute[value + 1] != attributes_values[value]:
-                    qualified_candidate = False
+                    selected_candidate = False
                     break
                     # if candidate is qualified add it to qualified_candidates,if not add it to other_group
-        if qualified_candidate:
-            protected_group.append(attribute[0])
+        if selected_candidate:
+            wanted_group.append(attribute[0])
         else:
             other_group.append(attribute[0])
-
-    # number of pair in mixed pairs equals to (number of candidate in protected_group*number of candidate in
-    # other_group)
-    mixed_pairs = len(protected_group) * len(other_group)
-    # number of count pairs
-    count_pairs = 0
-    # compute the number of count pair
-    for protected_candidate in protected_group:
-        for other_candidate in other_group:
-            rank_of_protected = rank[np.argwhere(rank[:, 0] == protected_candidate), 1]
-            rank_of_other = rank[np.argwhere(rank[:, 0] == other_candidate), 1]
-            if rank_of_protected < rank_of_other:
-                count_pairs += 1
-    # fpr score is the result
-    fpr = count_pairs / mixed_pairs
-    return fpr
+    return wanted_group, other_group
