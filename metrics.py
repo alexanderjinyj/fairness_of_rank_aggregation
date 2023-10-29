@@ -38,11 +38,9 @@ def top_k_parity(groups, k):
         then calculate whether the proportion on each group is equaled if True satisfied top-k parity,
         if False not satisfied.
     """
+
     # result value of satisfied top-k parity
     satisfied = True
-    # size of the groups
-    # counter the ith group in the iteration
-    # group_counter=0
     # an array, element is number of candidate(rank smaller than k) in one group
     cand_counters = []
     # counter the sum of candidate
