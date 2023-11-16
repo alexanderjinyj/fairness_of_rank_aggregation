@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 
@@ -5,15 +7,15 @@ import pandas as pd
 def pairwise_statistical_parity(ranking_1, ranking_2):
     """
     compute the pairwise_statistical_parity for ranking. compute the pairwise_statistical_parity for ranking.
-    parameter ranking_1 is A numpy 2d_array of ranking over the value1 first column is the id of the candidates 2nd
-    is the ranking value of the candidates.
-    parameter ranking_2 is A numpy 2d_array of ranking over the value1 first column is
-    the id of the candidates 2nd is the ranking value of the candidates.
+    parameter ranking_1 is A numpy 2d_array of ranking, 1 first column is the id of the candidates which
+    have same attribute value,2nd is the ranking value of the candidates.
+    parameter ranking_2 is A numpy 2d_array of ranking, 1 first column is the id of the candidates which
+    have another same attribute value,2nd is the ranking value of the candidates.
     
     """
     # return the parity value
     parity = 0
-
+    # calculate parity
     for x in ranking_1:
         for y in ranking_2:
             # if in the ranking candidate x in ranking_1 is smaller than y in ranking_2 parity plus 1
@@ -26,7 +28,7 @@ def pairwise_statistical_parity(ranking_1, ranking_2):
     return parity
 
 
-def top_k_parity(groups, k):
+def top_k_parity(groups, k,threshold):
     """
         computer whether the ranking with mutually exclusive groups satisfies top-k parity.
         groups are the arrays of  group,
@@ -47,29 +49,25 @@ def top_k_parity(groups, k):
     sum_candidates = 0
     # the counter of number of candidate in one group
     num_candidates = []
+    # count the number of candidate(rank smaller than k) in each group,and total number of all candidates
     for group in groups:
-        # count the number of candidate(rank smaller than k) in this group
         cand_counter = 0
-        # get the number of candidate in the group
         num_candidate = group.shape[0]
-        # add the number of candidate in the group into counter
         num_candidates.append(num_candidate)
-        # count the sum of candidate in the group
         sum_candidates = sum_candidates + num_candidate
-
+        # count the number of candidate(rank smaller than k)
         for candidate in group:
-            # if the candidate´s rank value smaller than k  then cand_counter +1
-            if candidate[1] <= k:
+            if candidate[1] <k:
                 cand_counter += 1
-        # add it to counters array
         cand_counters.append(cand_counter)
     # check whether the candidate(whose rank is smaller than k) in each group is proportional to number of candidate
     # in each group
     for i in range(0, groups.shape[0]):
-        # compute the ratio of the number of candidate in this group and the sum of the candidate
         proportion = num_candidates[i] / sum_candidates
-        # if number of candidate is not equal to the round of the (proportion* k),then it's not satisfied
-        if cand_counters[i] != round(proportion * k):
+        lower_boundary=max(math.floor((proportion-threshold)*k),0)
+        upper_boundary=min(math.ceil((proportion+threshold)*k),sum_candidates)
+        print( cand_counters[i], lower_boundary,upper_boundary,k)
+        if cand_counters[i] < lower_boundary or cand_counters[i] >upper_boundary:
             satisfied = False
             break
     return satisfied
@@ -90,7 +88,6 @@ def rank_equality_error(rank_1, rank_2, group_1, group_2):
     # calculate the count_pairs
     for candidate_1 in group_1:
         for candidate_2 in group_2:
-            # get the rank of each candidate in each ranking
             rank_1_of_candidate_1 = rank_1[np.argwhere(rank_1[:, 0] == candidate_1), 1]
             rank_1_of_candidate_2 = rank_1[np.argwhere(rank_1[:, 0] == candidate_2), 1]
             rank_2_of_candidate_1 = rank_2[np.argwhere(rank_2[:, 0] == candidate_1), 1]
@@ -122,24 +119,18 @@ def attribute_rank_parity(rank, attributes, k_attribute):
     fprs = []
     # compute teh fpr of every value of kth attribute
     for value in group_of_values:
-        # make the attributes_values, nan means not the kth attribute
         attributes_values = np.full(number_of_attributes, np.nan, dtype=object)
         attributes_values[k_attribute] = value
-        # compute fpr of value
         fpr = favored_pair_representation(rank, attributes, attributes_values)
-        fprs.append([value, float(fpr)])
+        fprs.append([value, fpr])
+
+    # calculate arp score
     fprs = np.array(fprs)
-    # get max fprs_scores and converse to float (in fprs its string cant applied in mix and min function)
     fprs_scores = fprs[:, 1].astype(np.float64)
-    # get max fprs
     max_fpr = np.max(fprs_scores)
-    # get min fpr
     min_fpr = np.min(fprs_scores)
-    # get the value which has greatest fpr
     max_value = fprs[np.argwhere(fprs[:, 1].astype(np.float64) == max_fpr), 0]
-    # get the value which has smaller est fpr
     min_value = fprs[np.argwhere(fprs[:, 1].astype(np.float64) == min_fpr), 0]
-    # compute arp
     arp = max_fpr - min_fpr
     # return a tuple of max_value ,min_value, arp
     return max_value, min_value, arp
@@ -153,7 +144,7 @@ def favored_pair_representation(rank, attributes, attributes_values):
     param attributes_values is an array of values of attributes. the interested attributes have value and
     the uninterested attribute's value is nan.
     """
-    # groups is an array of 2 arrays, first  array is an array of wanted candidates,
+    # groups is an array of 2d arrays, first  array is an array of wanted candidates,
     # second is the array of other candidates.
     groups = group_by(attributes, attributes_values)
     # group of candidates whose attributes values are  equal to attributes_values
@@ -173,6 +164,7 @@ def favored_pair_representation(rank, attributes, attributes_values):
             rank_of_other = rank[np.argwhere(rank[:, 0] == other_candidate), 1]
             if rank_of_wanted < rank_of_other:
                 count_pairs += 1
+
     # fpr score is the result
     fpr = count_pairs / mixed_pairs
     return fpr
@@ -192,22 +184,20 @@ def group_by(attributes, attributes_values):
     other_group = []
     # divide candidates into 2 groups
     for attribute in attributes:
-        # qualified_candidate check whether the candidates' attributes values are  equal to attributes_values
         selected_candidate = True
         # check whether the candidates' attributes values are  equal to attributes_values
         for value in range(len(attributes_values)):
             # if the value of one attribute in attributes_values is nan don't check it
             # if it is not nan check the value
             if ~pd.isnull(attributes_values[value]):
-                # check value if is not equal qualified_candidate become False and end loop.because attribute is
-                # tuple of (candidates and attributes value) and attributes_values is the tuple of attributes values
-                # of index of  attribute should +1
+                # check value if is not equal selected_candidate become False and end loop.
                 if attribute[value + 1] != attributes_values[value]:
                     selected_candidate = False
                     break
-                    # if candidate is qualified add it to qualified_candidates,if not add it to other_group
+        # if candidate is qualified add it to qualified_candidates,if not add it to other_group
         if selected_candidate:
             wanted_group.append(attribute[0])
         else:
             other_group.append(attribute[0])
+
     return wanted_group, other_group
