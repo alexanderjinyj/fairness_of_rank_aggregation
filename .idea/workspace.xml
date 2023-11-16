@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c61dc63a-9f35-419f-bba3-795b674142e5" name="Changes" comment="improve the test of top k parity">
+      <change afterPath="$PROJECT_DIR$/.idea/fariness_of_rank_aggregation.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jupyter-settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/CITATION.cff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/data/crowd_labels.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/data/gt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cs_baseranks.npy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cs_groups.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/csranking_case.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/2207.10020.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/3514221.3517865.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/consensus borda.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/consensus.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/deepface.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/p2706-kuhlman.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/literature/tsolutions.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/markov_chain_test.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/markov_chains_methods.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fairness_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fairness_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/metrics.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="Jupyter Notebook" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="second_branch" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2XFKfJzph9Eoq8CF1TB717OB9zH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/alexa/Downloads/jin yijun/fariness_of_rank_aggregation&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="markov_chains_methods" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="fariness_of_rank_aggregation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/markov_chains_methods.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.markov_chains_methods" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add metrics and fairnesstest" />
+    <MESSAGE value="add read me" />
+    <MESSAGE value="divide group_by function from favored_pair_representation" />
+    <MESSAGE value="improve the test of top k parity" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve the test of top k parity" />
+  </component>
+</project>
