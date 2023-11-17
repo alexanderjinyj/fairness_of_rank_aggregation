@@ -5,30 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61dc63a-9f35-419f-bba3-795b674142e5" name="Changes" comment="improve the test of top k parity">
-      <change afterPath="$PROJECT_DIR$/.idea/fariness_of_rank_aggregation.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jupyter-settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/CITATION.cff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/data/crowd_labels.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IMDB-WIKI-SbS-main/data/gt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cs_baseranks.npy" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cs_groups.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/csranking_case.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/2207.10020.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/3514221.3517865.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/consensus borda.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/consensus.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/deepface.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/p2706-kuhlman.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/literature/tsolutions.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/markov_chain_test.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/markov_chains_methods.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fairness_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/fairness_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markov_chain_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/markov_chain_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markov_chains_methods.py" beforeDir="false" afterPath="$PROJECT_DIR$/markov_chains_methods.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

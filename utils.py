@@ -101,3 +101,74 @@ def build_graph(ranks):
             edge_weights[j, i] = h_ji - h_ij
     return edge_weights
 
+
+def build_parity_constraints(groups):
+    n_candidates = len(groups)
+
+    edges = np.zeros((n_candidates, n_candidates), dtype=object)
+    for i, j in combinations(range(n_candidates), 2):
+
+        edges[i, j] = (groups[i] - groups[j])
+        print(groups[i] - groups[j])
+        edges[j,i] = -(groups[i] - groups[j])
+    return edges.ravel()
+
+def aggregate_parity(n_voters, n_candidates, ranks, groups, thresh):
+
+    #Declare gurobi model object
+    m = gp.Model("fair_aggregate_kemeny")
+    m.setParam("OutputFlag", 0)
+
+    # Indicator variable for each pair
+    x = {}
+    c=0
+    for i in range(n_candidates):
+        for j in range(n_candidates):
+            x[c] = m.addVar(vtype=GRB.BINARY, name="x(%d)(%d)" %(i,j))
+            c+=1
+    m.update()
+
+    idx = lambda i, j: n_candidates * i + j
+
+    # pairwise constraints
+    for i, j in combinations(range(n_candidates), 2):
+        m.addConstr(x[idx(i, j)] + x[idx(j, i)] == 1)
+    m.update()
+
+    #transitivity constraints
+    for i, j, k in permutations(range(n_candidates), 3):
+        m.addConstr(x[idx(i, j)] + x[idx(j, k)] + x[idx(k,i)] >= 1)
+    m.update()
+
+    #parity constraints
+    parity = build_parity_constraints(groups)
+    print(parity[1])
+    print(type(parity[1]))
+    print(parity)
+    print(int(parity[1]))
+    m.addConstr(quicksum(int(parity[i])*x[i] for i in range(len(x)))<= thresh)
+    m.addConstr(quicksum(int(parity[i])*x[i] for i in range(len(x)))>= -thresh)
+
+    # Set objective
+    # maximize c.T * x
+    edge_weights = build_graph(ranks)
+    c = -1 * edge_weights.ravel()
+    m.setObjective(quicksum(c[i]*x[i] for i in range(len(x))), GRB.MAXIMIZE)
+    m.update()
+    #m.write("kemeny_n"+str(n_ranks)+"_N"+str(rank_len) + "_t"+str(theta) + ".lp")
+    t0 = time()
+    m.optimize()
+    t1 = time()
+
+    if m.status == GRB.OPTIMAL:
+        #m.write("kemeny_n"+str(rank_len)+"_N"+str(n_ranks)+"_t"+str(theta)+".sol")
+
+        #get consensus ranking
+        sol = []
+        for i in x:
+            sol.append(x[i].X)
+        sol=np.array(sol)
+        aggr_rank = np.sum(sol.reshape((n_candidates,n_candidates)), axis=1)
+        return aggr_rank, t1-t0
+    else:
+        return None, t1-t0

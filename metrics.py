@@ -66,7 +66,6 @@ def top_k_parity(groups, k,threshold):
         proportion = num_candidates[i] / sum_candidates
         lower_boundary=max(math.floor((proportion-threshold)*k),0)
         upper_boundary=min(math.ceil((proportion+threshold)*k),sum_candidates)
-        print( cand_counters[i], lower_boundary,upper_boundary,k)
         if cand_counters[i] < lower_boundary or cand_counters[i] >upper_boundary:
             satisfied = False
             break

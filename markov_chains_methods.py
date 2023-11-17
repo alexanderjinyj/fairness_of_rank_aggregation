@@ -69,6 +69,7 @@ def generate_transition_matrix_without_self_circle(rankings):
             transition_matrix[i,i]=1
     return  transition_matrix
 
+
 def generate_transition_matrix(rankings):
     size_candidate = rankings.shape[1]
     transition_matrix = np.zeros(shape=(size_candidate, size_candidate))
@@ -93,46 +94,32 @@ def count_preference(rankings,i,j):
     preference=np.sum((rankings[:,i]-rankings[:,j])<0)
     return preference
 
-"""
-naive stupid idea
-
-
-def aggregate_fair_rank(rankings, attribute,groups):
-    stationary_distribution = fair_stationary_distribute(rankings,attribute,groups)
-    temp_ranking = np.argsort(stationary_distribution)
-    aggregate_ranking = np.empty_like(temp_ranking)
-    aggregate_ranking[temp_ranking] = np.arange(len(stationary_distribution))
-    return aggregate_ranking
-
-
-def fair_stationary_distribute(rankings, attribute,groups):
-    transition_matrix = []
-    transition_matrix = generate_fair_transition_matrix(rankings, attribute,groups)
-    # transition_matrix = transition_matrix*(1-alpha)+(alpha/transition_matrix.shape[0])
-    transition_matrix_trans = transition_matrix.T
-    eigenvalues, eigenvectors = np.linalg.eig(transition_matrix_trans)
-    close_to_1_idx = np.isclose(eigenvalues, 1, rtol=0.001)
-    target_eigenvector = eigenvectors[:, close_to_1_idx]
-    target_eigenvector = target_eigenvector[:, 0]
-    # Turn the eigenvector elements into probabilities
-    stationary_distribute = target_eigenvector / sum(target_eigenvector)
-    return stationary_distribute
-
-
-def generate_fair_transition_matrix(rankings,attribute,groups):
-    proportion_groups = proportions(groups)
+def mean_distance_transition_matrix(rankings):
     size_candidate = rankings.shape[1]
     transition_matrix = np.zeros(shape=(size_candidate, size_candidate))
     for i in range(size_candidate):
         for j in range(size_candidate):
-            value_j = attribute[j, 1]
-            index = np.argwhere(groups[:,0] == value_j)
-            probability = count_probability_edge(rankings, i, j)
-            transition_matrix[i, j] = probability * proportion_groups[index[0][0]]
+            probability=count_probability_edge(rankings, i, j)
+            mean_distance=mean_distance_i_j(rankings,i,j)
+            if probability>0:
+                transition_matrix[i,j] =probability/mean_distance
     for i in range(size_candidate):
-        transition_matrix[i, i] = 1 - np.sum(transition_matrix[i, :])
+        transition_matrix[i,i] = 1 - np.sum(transition_matrix[i, :])
     return transition_matrix
-"""
+
+def mean_distance_i_j(rankings,i,j):
+    mean_distance=0
+    counter=0
+    for ranking in rankings:
+        if ranking[i] < ranking[j]:
+            mean_distance+=ranking[j]-ranking[i]
+            counter+=1
+    if counter>0:
+        mean_distance=mean_distance/counter
+    else:
+        mean_distance=0
+    return mean_distance
+
 
 
 def proportions(groups):
@@ -143,19 +130,33 @@ def proportions(groups):
     proportions = np.array(proportions)
     return proportions
 
+def get_initial(transition_matrix):
+    initial=np.inf
+    max=0
+    for i in range(transition_matrix.shape[0]):
+        sum_preference= np.sum(transition_matrix[i,:])-transition_matrix[i,i]
+        if sum_preference>max:
+            max=sum_preference
+            initial=i
+    return initial
 
-def fair_kemeny_mc_rankings_greedy(rankings, attribute, groups, threshold):
+
+
+def fair_kemeny_mc_rankings_greedy(rankings, attribute, groups, threshold,type):
     group_proportions = proportions(groups)
-    transition_matrix = generate_transition_matrix(rankings)
-    print(transition_matrix)
     size_candidate = rankings.shape[1]
+    transition_matrix=np.zeros(size_candidate)
+    if type==0:
+        transition_matrix = generate_transition_matrix(rankings)
+    if type==1:
+        transition_matrix= mean_distance_transition_matrix(rankings)
     fair_kemeny_rankings = []
-    size_candidate = rankings.shape[1]
-    for initial in range(size_candidate):
-        fair_kemeny_ranking = generate_fair_kemeny_mc_ranking_greedy(
+    initial =get_initial(transition_matrix)
+    print('initial: '+ str(initial))
+    fair_kemeny_ranking = generate_fair_kemeny_mc_ranking_greedy(
             rankings, attribute, groups, threshold, group_proportions, transition_matrix, initial)
-        fair_kemeny_ranking_distance=ul.kemeny_dist(rankings,fair_kemeny_ranking)
-        fair_kemeny_rankings.append((fair_kemeny_ranking,fair_kemeny_ranking_distance))
+    fair_kemeny_ranking_distance=ul.kemeny_dist(rankings,fair_kemeny_ranking)
+    fair_kemeny_rankings.append((fair_kemeny_ranking,fair_kemeny_ranking_distance))
     return fair_kemeny_rankings
 
 
@@ -188,7 +189,7 @@ def generate_fair_kemeny_mc_ranking_greedy(rankings, attribute, groups, threshol
                 if group_queues[lower_tight_group].qsize()>0:
                     candidate_of_lower_queue_pop = group_queues[lower_tight_group].get()
             fair_kemeny_ranking[candidate_of_lower_queue_pop] = steps
-            current_candidate = candidate_of_lower_queue_pop
+            #current_candidate = candidate_of_lower_queue_pop
             group_in_prefix[lower_tight_group] += 1
             candidate_visited[candidate_of_lower_queue_pop]=1
             group_queues[lower_tight_group].task_done()
