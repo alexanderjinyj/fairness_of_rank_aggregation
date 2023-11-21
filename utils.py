@@ -142,10 +142,6 @@ def aggregate_parity(n_voters, n_candidates, ranks, groups, thresh):
 
     #parity constraints
     parity = build_parity_constraints(groups)
-    print(parity[1])
-    print(type(parity[1]))
-    print(parity)
-    print(int(parity[1]))
     m.addConstr(quicksum(int(parity[i])*x[i] for i in range(len(x)))<= thresh)
     m.addConstr(quicksum(int(parity[i])*x[i] for i in range(len(x)))>= -thresh)
 

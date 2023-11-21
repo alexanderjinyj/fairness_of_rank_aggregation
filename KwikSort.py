@@ -1,4 +1,5 @@
 from itertools import combinations
+from math import floor, ceil
 
 import numpy as np
 
@@ -104,7 +105,7 @@ def unfairness(Vertices,boundary_0,boundary_1,groups,attribute):
 
 
 def boundary(proportion_group,length_Vertices,threshold):
-    return(round((proportion_group-threshold)*(length_Vertices)),round((proportion_group+threshold)*(length_Vertices)))
+    return(floor((proportion_group-threshold)*(length_Vertices)),ceil((proportion_group+threshold)*(length_Vertices)))
 
 def adjust_unfairness(rankings,Vertices_L,pivot_candidate,Vertices_R,groups,attribute,threshold):
     length_Vertices_L=len(Vertices_L)

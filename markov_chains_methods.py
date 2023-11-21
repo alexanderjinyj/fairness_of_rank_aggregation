@@ -41,7 +41,7 @@ def stationary_distribute(rankings, type):
     if type == 0:
         transition_matrix = generate_transition_matrix(rankings)
     if type == 1:
-        transition_matrix = generate_transition_matrix_without_self_circle(rankings)
+        transition_matrix = mean_distance_transition_matrix(rankings)
     # transition_matrix = transition_matrix*(1-alpha)+(alpha/transition_matrix.shape[0])
     transition_matrix_trans = transition_matrix.T
     eigenvalues, eigenvectors = np.linalg.eig(transition_matrix_trans)

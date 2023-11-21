@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c61dc63a-9f35-419f-bba3-795b674142e5" name="Changes" comment="fairkwik implement">
+    <list default="true" id="c61dc63a-9f35-419f-bba3-795b674142e5" name="Changes" comment="fairkwik debug and do experiment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/csranking_case.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/csranking_case.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fair_Kwik_Sort.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Fair_Kwik_Sort.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/KwikSort.py" beforeDir="false" afterPath="$PROJECT_DIR$/KwikSort.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markov_chain_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/markov_chain_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markov_chains_methods.py" beforeDir="false" afterPath="$PROJECT_DIR$/markov_chains_methods.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,6 +113,7 @@
     <MESSAGE value="improve the test of top k parity" />
     <MESSAGE value="fair kemeny gurobi and mc greedy" />
     <MESSAGE value="fairkwik implement" />
-    <option name="LAST_COMMIT_MESSAGE" value="fairkwik implement" />
+    <MESSAGE value="fairkwik debug and do experiment" />
+    <option name="LAST_COMMIT_MESSAGE" value="fairkwik debug and do experiment" />
   </component>
 </project>
