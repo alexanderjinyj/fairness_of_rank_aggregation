@@ -1,0 +1,6 @@
+,method,kemeny_distance,parity,running-time
+0,markov.chain,19126,,0.4188
+1,Kwik,24104,,0.105
+2,fair_Kwik,23910,0.2038095238095238,10.712
+3,gurobi,18480,,13.3897
+4,fair_gurobi,18530,0,141.3624

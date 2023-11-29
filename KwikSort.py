@@ -6,34 +6,42 @@ import numpy as np
 from random import randrange
 
 
-def KwikSort(Vertices,rankings):
+def KwikSort(Vertices,initial,rankings):
     Fas_Tournament=build_graph(rankings)
     unweighted_majority_Tournament=generate_unweighted_majority_Tournament(Vertices,Fas_Tournament)
-    ranking_opt=Kwik_Sort_recur(unweighted_majority_Tournament,Fas_Tournament)
+    ranking_opt=Kwik_Sort_recur(unweighted_majority_Tournament,initial,Fas_Tournament)
 
     return ranking_opt
 
-def Kwik_Sort_recur(unweighted_majority_Tournament,Fas_Tournament):
+def Kwik_Sort_recur(unweighted_majority_Tournament,pivot,Fas_Tournament):
     Vertices=unweighted_majority_Tournament[0]
     Arc=unweighted_majority_Tournament[1]
     if len(Vertices) ==0:
         return np.zeros(0)
     size_candidates=len(Vertices)
-    pivot_candidate=Vertices[randrange(size_candidates)]
+    #pivot_candidate=Vertices[randrange(size_candidates)]
     Vertices_L=[]
     Vertices_R=[]
     for j in range(size_candidates):
-        if Arc[Vertices[j],pivot_candidate]==1:
+        if Arc[Vertices[j],pivot]==1:
             Vertices_L.append(Vertices[j])
-        if Arc[pivot_candidate,Vertices[j]]==1:
+        if Arc[pivot,Vertices[j]]==1:
             Vertices_R.append(Vertices[j])
     Vertices_L=np.array(Vertices_L)
+    if len(Vertices_L)>0:
+        pivot_L=Vertices_L[randrange(len(Vertices_L))]
+    else:
+        pivot_L=0
+    if(len(Vertices_R)>0):
+        pivot_R=Vertices_R[randrange(len(Vertices_R))]
+    else:
+        pivot_R=0
     Vertices_R=np.array(Vertices_R)
     unweighted_majority_Tournament_L=generate_unweighted_majority_Tournament(Vertices_L,Fas_Tournament)
     unweighted_majority_Tournament_R=generate_unweighted_majority_Tournament(Vertices_R,Fas_Tournament)
-    permutation_L=Kwik_Sort_recur(unweighted_majority_Tournament_L,Fas_Tournament).astype(int)
-    permutation_R=Kwik_Sort_recur(unweighted_majority_Tournament_R,Fas_Tournament).astype(int)
-    return np.concatenate((permutation_L,np.array([pivot_candidate]).astype(int),permutation_R))
+    permutation_L=Kwik_Sort_recur(unweighted_majority_Tournament_L,pivot_L,Fas_Tournament).astype(int)
+    permutation_R=Kwik_Sort_recur(unweighted_majority_Tournament_R,pivot_R,Fas_Tournament).astype(int)
+    return np.concatenate((permutation_L,np.array([pivot]).astype(int),permutation_R))
 
 
 def generate_unweighted_majority_Tournament(Verticles,Fas_Tournament):

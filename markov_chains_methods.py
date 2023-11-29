@@ -29,65 +29,55 @@ def get_first(rankings, type):
 """
 
 def aggregate_rank_mc(rankings,type):
-    stationary_distribution = stationary_distribute(rankings,type)
+    precedence_matrix=build_precedence_matrix(rankings)
+    print(precedence_matrix[0])
+    out_degree_matrix=build_out_degree_matrix(precedence_matrix)
+    print(out_degree_matrix)
+    stationary_distribution = stationary_distribute(rankings,precedence_matrix,out_degree_matrix,type)
     temp_ranking = np.argsort(stationary_distribution)
     aggregate_ranking = np.empty_like(temp_ranking)
-    aggregate_ranking[temp_ranking] = np.arange(len(stationary_distribution))
+    aggregate_ranking[temp_ranking] = np.arange(len(stationary_distribution))[::-1]
     return aggregate_ranking
 
 
-def stationary_distribute(rankings, type):
+def stationary_distribute(rankings,precedence_matrix,out_degree_matrix ,type):
     transition_matrix = []
     if type == 0:
-        transition_matrix = generate_transition_matrix(rankings)
+        transition_matrix = (1-0.05)*generate_transition_matrix(rankings,precedence_matrix)  + 0.05/(rankings.shape[1])
     if type == 1:
-        transition_matrix = mean_distance_transition_matrix(rankings)
+        transition_matrix = incresing_consensus_transition_matrix(rankings,precedence_matrix,out_degree_matrix)
     # transition_matrix = transition_matrix*(1-alpha)+(alpha/transition_matrix.shape[0])
+    print(transition_matrix[0])
     transition_matrix_trans = transition_matrix.T
     eigenvalues, eigenvectors = np.linalg.eig(transition_matrix_trans)
     close_to_1_idx = np.isclose(eigenvalues,1, rtol=0.001)
+    print(eigenvalues[close_to_1_idx])
     target_eigenvector = eigenvectors[:,close_to_1_idx]
     target_eigenvector = target_eigenvector[:,0]
 # Turn the eigenvector elements into probabilities
     stationary_distribute = target_eigenvector / sum(target_eigenvector)
     return stationary_distribute
 
-def generate_transition_matrix_without_self_circle(rankings):
-    size_candidate = rankings.shape[1]
-    transition_matrix = np.zeros(shape=(size_candidate, size_candidate))
-    preference=np.zeros(shape=(size_candidate, size_candidate))
-    for i in range(size_candidate):
-        for j in range(size_candidate):
-            preference[i,j]=count_preference(rankings,i,j)
-    for i in range(size_candidate):
-        preference_i=(np.sum(preference[i,:]))
-        if preference_i >0:
-            for j in range(size_candidate):
-                transition_matrix[i,j]=preference[i,j]/preference_i
-        else:
-            transition_matrix[i,:]=0
-            transition_matrix[i,i]=1
-    return  transition_matrix
 
 
-def generate_transition_matrix(rankings):
+
+def generate_transition_matrix(rankings,precedence_matrix):
     size_candidate = rankings.shape[1]
+    total_pairs = rankings.shape[0] * rankings.shape[1]
     transition_matrix = np.zeros(shape=(size_candidate, size_candidate))
     for i in range(size_candidate):
+        print(i)
         for j in range(size_candidate):
-            probability=count_probability_edge(rankings, i, j)
+            probability=precedence_matrix[i,j]/total_pairs
             transition_matrix[i,j] =probability
     for i in range(size_candidate):
         transition_matrix[i,i] = 1 - np.sum(transition_matrix[i, :])
     return transition_matrix
 
 def count_probability_edge(rankings, i, j):
-    count_preference = 0
     total_pairs = rankings.shape[0] * rankings.shape[1]
-    for ranking in rankings:
-        if ranking[i] < ranking[j]:
-            count_preference += 1
-    return count_preference / total_pairs
+    preference=np.sum((rankings[:,i]-rankings[:,j])<0)
+    return preference / total_pairs
 
 
 def count_preference(rankings,i,j):
@@ -106,6 +96,19 @@ def mean_distance_transition_matrix(rankings):
     for i in range(size_candidate):
         transition_matrix[i,i] = 1 - np.sum(transition_matrix[i, :])
     return transition_matrix
+
+def incresing_consensus_transition_matrix(rankings,precedence_matrix,out_degree_matrix):
+    size_candidate = rankings.shape[1]
+    incresing_consensus_transition_matrix=np.zeros(shape=(size_candidate, size_candidate))
+
+    for start in range(size_candidate):
+        for end in range(size_candidate):
+            if start != end:
+                increasing_consensus=(precedence_matrix[start,end]+out_degree_matrix[end]-precedence_matrix[end,start])
+                incresing_consensus_transition_matrix[start,end]=increasing_consensus/(size_candidate*size_candidate*rankings.shape[0])
+    for i in range(size_candidate):
+        incresing_consensus_transition_matrix[i,i] = 1 - np.sum(incresing_consensus_transition_matrix[i, :])
+    return incresing_consensus_transition_matrix
 
 def mean_distance_i_j(rankings,i,j):
     mean_distance=0
@@ -145,19 +148,19 @@ def get_initial(transition_matrix):
 def fair_kemeny_mc_rankings_greedy(rankings, attribute, groups, threshold,type):
     group_proportions = proportions(groups)
     size_candidate = rankings.shape[1]
+    precedence_matrix=build_precedence_matrix(rankings)
+    out_degree_matrix=build_out_degree_matrix(precedence_matrix)
+    initial =np.argmax(out_degree_matrix)
+
     transition_matrix=np.zeros(size_candidate)
     if type==0:
-        transition_matrix = generate_transition_matrix(rankings)
+        transition_matrix = incresing_consensus_transition_matrix(rankings,precedence_matrix,out_degree_matrix)
     if type==1:
         transition_matrix= mean_distance_transition_matrix(rankings)
-    fair_kemeny_rankings = []
-    initial =get_initial(transition_matrix)
     print('initial: '+ str(initial))
     fair_kemeny_ranking = generate_fair_kemeny_mc_ranking_greedy(
             rankings, attribute, groups, threshold, group_proportions, transition_matrix, initial)
-    fair_kemeny_ranking_distance=ul.kemeny_dist(rankings,fair_kemeny_ranking)
-    fair_kemeny_rankings.append((fair_kemeny_ranking,fair_kemeny_ranking_distance))
-    return fair_kemeny_rankings
+    return fair_kemeny_ranking
 
 
 def generate_fair_kemeny_mc_ranking_greedy(rankings, attribute, groups, threshold, group_proportions,
@@ -239,3 +242,20 @@ def generate_group_queues(degree_candidate, candidate_visited, attribute, groups
         if candidate_visited[i] == 0:
             group_queues[attribute[i][1]].put(i)
     return group_queues
+
+def build_precedence_matrix(rankings):
+    n_voters, size_candidate = rankings.shape
+    edge_weights = np.zeros((size_candidate, size_candidate))
+    for i in range(size_candidate):
+        for j in range(size_candidate):
+            preference = rankings[:, i] - rankings[:, j]
+            preference_i_j = np.sum(preference < 0)  # prefers i to j
+            edge_weights[i, j] = preference_i_j
+    return edge_weights
+
+def build_out_degree_matrix(precedence_matrix):
+    size=precedence_matrix.shape[0]
+    out_degree_matrix=np.zeros(size)
+    for i in range(size):
+        out_degree_matrix[i]=np.sum(precedence_matrix[i,:])
+    return out_degree_matrix
