@@ -194,7 +194,6 @@ def GrBinaryIPF(rank,group):
 
     i = 1
     while len(Rho0) != 0 or len(Rho1) != 0:
-        print(Rout)
         if P1count >= len(Rho1):
             Rout.extend(Rho0[P0count:len(Rho0)])
             return Rout

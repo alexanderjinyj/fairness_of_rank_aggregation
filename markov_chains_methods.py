@@ -1,5 +1,7 @@
 from itertools import combinations
 import queue
+from time import time
+
 import numpy as np
 from lief import Object
 import utils as ul
@@ -29,10 +31,11 @@ def get_first(rankings, type):
 """
 
 def aggregate_rank_mc(rankings,type):
+    t0=time()
     precedence_matrix=build_precedence_matrix(rankings)
-    print(precedence_matrix[0])
+    t1=time()
+    print(str(t1-t0) +'precedencd')
     out_degree_matrix=build_out_degree_matrix(precedence_matrix)
-    print(out_degree_matrix)
     stationary_distribution = stationary_distribute(rankings,precedence_matrix,out_degree_matrix,type)
     temp_ranking = np.argsort(stationary_distribution)
     aggregate_ranking = np.empty_like(temp_ranking)
@@ -47,11 +50,9 @@ def stationary_distribute(rankings,precedence_matrix,out_degree_matrix ,type):
     if type == 1:
         transition_matrix = incresing_consensus_transition_matrix(rankings,precedence_matrix,out_degree_matrix)
     # transition_matrix = transition_matrix*(1-alpha)+(alpha/transition_matrix.shape[0])
-    print(transition_matrix[0])
     transition_matrix_trans = transition_matrix.T
     eigenvalues, eigenvectors = np.linalg.eig(transition_matrix_trans)
     close_to_1_idx = np.isclose(eigenvalues,1, rtol=0.001)
-    print(eigenvalues[close_to_1_idx])
     target_eigenvector = eigenvectors[:,close_to_1_idx]
     target_eigenvector = target_eigenvector[:,0]
 # Turn the eigenvector elements into probabilities
@@ -66,9 +67,8 @@ def generate_transition_matrix(rankings,precedence_matrix):
     total_pairs = rankings.shape[0] * rankings.shape[1]
     transition_matrix = np.zeros(shape=(size_candidate, size_candidate))
     for i in range(size_candidate):
-        print(i)
         for j in range(size_candidate):
-            probability=precedence_matrix[i,j]/total_pairs
+            probability=precedence_matrix[j,i]/total_pairs
             transition_matrix[i,j] =probability
     for i in range(size_candidate):
         transition_matrix[i,i] = 1 - np.sum(transition_matrix[i, :])
@@ -148,7 +148,10 @@ def get_initial(transition_matrix):
 def fair_kemeny_mc_rankings_greedy(rankings, attribute, groups, threshold,type):
     group_proportions = proportions(groups)
     size_candidate = rankings.shape[1]
+    t0=time()
     precedence_matrix=build_precedence_matrix(rankings)
+    t1=time()
+    print(str(t1-t0) +'precedencd')
     out_degree_matrix=build_out_degree_matrix(precedence_matrix)
     initial =np.argmax(out_degree_matrix)
 
